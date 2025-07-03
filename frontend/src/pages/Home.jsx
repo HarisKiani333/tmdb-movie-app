@@ -1,8 +1,9 @@
 import MovieCard from "../components/MovieCard";
 import { useState, useEffect } from "react";
 import "../css/home.css";
-import { fetchMovies, GetPopularMovies } from "../services/api";
+import { fetchMovies, GetPopularMovies, fetchLocalMovies } from "../services/api";
 import { useLocation } from "react-router-dom";
+
 const Home = () => {
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -28,6 +29,30 @@ const Home = () => {
     loadPopularMovies();
   }
 }, [location.state]);
+
+
+  useEffect(() => {
+    const loadLocalMovies = async () => {
+      try {
+        setLoading(true);
+        const localMovies = await fetchLocalMovies();
+        // Validate movie objects before setting state
+        const validMovies = localMovies.filter(
+          m => m && m.id && m.title && m.poster_path && m.release_date && m.overview
+        );
+        if (validMovies.length !== localMovies.length) {
+          console.warn("Some movies from backend were invalid and filtered out", localMovies);
+        }
+        setMovies(validMovies);
+      } catch (error) {
+        setError(error.message);
+        console.error("Error fetching local movies:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadLocalMovies();
+  }, []);
 
 
 

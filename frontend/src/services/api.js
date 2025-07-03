@@ -3,6 +3,12 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 
 
 
+export const fetchLocalMovies = async () => {
+    const response = await fetch('http://localhost:5000/api/movies');
+    if (!response.ok) throw new Error('Failed to fetch local movies');
+    return response.json();
+  };
+
 
 export const GetPopularMovies = async () => {
     const url = `${BASE_URL}/movie/popular?api_key=${API_KEY}`;
